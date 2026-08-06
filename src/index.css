@@ -1,0 +1,151 @@
+﻿@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #020617;
+  --brand: #0ea5a4;
+  --brand-secondary: #38bdf8;
+  --brand-contrast: #ffffff;
+  --brand-soft: rgba(14, 165, 164, 0.16);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: radial-gradient(circle at top, rgba(14, 165, 164, 0.08), transparent 28%),
+    linear-gradient(180deg, #020617 0%, #050d18 100%);
+  color: #e2e8f0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(14, 165, 164, 0.28);
+  color: #f8fafc;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.gemini-border {
+  position: absolute;
+  inset: 0;
+  border-radius: 32px;
+}
+
+.gemini-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: conic-gradient(
+    #ff1f6d,
+    #ff753e,
+    #ffaa01,
+    #412fa6,
+    #2d6cbf,
+    #00bcab,
+    #ff1f6d
+  );
+  animation: rotateGemini 18s linear infinite;
+}
+
+.gemini-border::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: calc(32px - 1px);
+  background: #0f172a;
+}
+
+@keyframes rotateGemini {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.marquee-wrapper {
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  animation: marquee 12s linear infinite;
+  will-change: transform;
+}
+
+.marquee-item {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+}
+
+.marquee-item img {
+  filter: grayscale(100%);
+  opacity: 0.75;
+  transition: transform 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
+  max-height: 70px;
+}
+
+.marquee-item:hover img {
+  filter: grayscale(0%);
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: #f8fafc;
+  opacity: 0.95;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: var(--brand);
+}
+
+.swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.3);
+  opacity: 1;
+}
+
+.swiper-pagination-bullet-active {
+  background: var(--brand);
+}
+
