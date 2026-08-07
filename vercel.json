@@ -1,12 +1,9 @@
 {
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/assets/:path*", "destination": "/assets/:path*" },
+    { "source": "/favicon.svg", "destination": "/favicon.svg" },
+    { "source": "/logo copy.png", "destination": "/logo copy.png" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
-}
+}[]

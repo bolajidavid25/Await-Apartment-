@@ -10,10 +10,18 @@ const indicators = [
   { icon: Sparkles, label: 'Premium Residential Listings' },
 ]
 
-const logoModules = import.meta.glob('../assets/trusted/*.{png,jpg,jpeg,svg}', { as: 'url', eager: true })
-const logos = Object.keys(logoModules)
-  .sort((a, b) => a.localeCompare(b))
-  .map((key) => encodeURI(logoModules[key]))
+const logos = [
+  new URL('../assets/trusted/adron trust_no_bg.png', import.meta.url).href,
+  new URL('../assets/trusted/berkshire trust_no_bg.png', import.meta.url).href,
+  new URL('../assets/trusted/BH-Logo trust_no_bg.png', import.meta.url).href,
+  new URL('../assets/trusted/century 12 trust_no_bg.png', import.meta.url).href,
+  new URL('../assets/trusted/codwell trust_no_bg.png', import.meta.url).href,
+  new URL('../assets/trusted/keller trust_no_bg.png', import.meta.url).href,
+  new URL('../assets/trusted/Landwey-Orange trust_no_bg.png', import.meta.url).href,
+  new URL('../assets/trusted/revolution trust_no_bg.png', import.meta.url).href,
+  new URL('../assets/trusted/Sujimoto-project trust_no_bg.png', import.meta.url).href,
+  new URL('../assets/trusted/zylus trust_no_bg.png', import.meta.url).href,
+]
 
 const TrustedBySection = () => {
   const prefersReducedMotion = useReducedMotion()
