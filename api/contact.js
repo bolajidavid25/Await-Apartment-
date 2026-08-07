@@ -1,11 +1,17 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
+
+  const resendApiKey = process.env.RESEND_API_KEY
+  if (!resendApiKey) {
+    console.error('RESEND_API_KEY is not configured')
+    return res.status(500).json({ error: 'Email service is not configured. Please set RESEND_API_KEY.' })
+  }
+
+  const resend = new Resend(resendApiKey)
 
   const { name, email, message } = req.body || {}
 
