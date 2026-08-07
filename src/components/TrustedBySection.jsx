@@ -13,7 +13,7 @@ const indicators = [
 const logoModules = import.meta.glob('../assets/trusted/*.{png,jpg,jpeg,svg}', { as: 'url', eager: true })
 const logos = Object.keys(logoModules)
   .sort((a, b) => a.localeCompare(b))
-  .map((key) => logoModules[key])
+  .map((key) => encodeURI(logoModules[key]))
 
 const TrustedBySection = () => {
   const prefersReducedMotion = useReducedMotion()
