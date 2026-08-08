@@ -104,39 +104,42 @@ const TrustedBySection = () => {
         >
 
           {/* Logo Marquee */}
-          <div className="marquee-wrapper overflow-hidden rounded-[28px] bg-white/70 px-4 py-6 shadow-inner shadow-slate-200/40 sm:px-6">
+          <div className="marquee-wrapper rounded-[28px] bg-white/70 px-4 py-6 shadow-inner shadow-slate-200/40 sm:px-6">
             <div className="marquee-track">
 
-              {/* First set */}
+              {/* FIRST SET OF 10 LOGOS */}
               <div className="marquee-group">
                 {logos.map((src, index) => (
                   <div
-                    key={`first-${src}-${index}`}
+                    key={`group-one-${index}`}
                     className="marquee-item"
                   >
                     <div className="flex h-20 items-center justify-center rounded-[24px] border border-slate-200/80 bg-white px-6 py-4 shadow-sm shadow-slate-200/50">
                       <img
                         src={src}
                         alt="Trusted partner logo"
-                        className="h-14 max-h-[70px] w-auto object-contain transition duration-300"
+                        className="h-14 max-h-[70px] w-auto object-contain"
                       />
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Identical second set */}
-              <div className="marquee-group" aria-hidden="true">
+              {/* SECOND IDENTICAL SET OF 10 LOGOS */}
+              <div
+                className="marquee-group"
+                aria-hidden="true"
+              >
                 {logos.map((src, index) => (
                   <div
-                    key={`second-${src}-${index}`}
+                    key={`group-two-${index}`}
                     className="marquee-item"
                   >
                     <div className="flex h-20 items-center justify-center rounded-[24px] border border-slate-200/80 bg-white px-6 py-4 shadow-sm shadow-slate-200/50">
                       <img
                         src={src}
                         alt=""
-                        className="h-14 max-h-[70px] w-auto object-contain transition duration-300"
+                        className="h-14 max-h-[70px] w-auto object-contain"
                       />
                     </div>
                   </div>
@@ -145,7 +148,6 @@ const TrustedBySection = () => {
 
             </div>
           </div>
-
           {/* Trust Indicators */}
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {indicators.map((item) => {

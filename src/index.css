@@ -82,32 +82,49 @@ textarea {
 }
 
 .marquee-wrapper {
-  overflow: hidden;
   width: 100%;
+  overflow: hidden;
 }
 
 .marquee-track {
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 2.5rem;
+  width: max-content;
   animation: marquee 30s linear infinite;
   will-change: transform;
+}
+
+.marquee-group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 2.5rem;
+  flex: 0 0 auto;
   width: max-content;
 }
 
 .marquee-item {
   flex: 0 0 auto;
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   min-width: 150px;
 }
 
 .marquee-item img {
+  max-height: 70px;
+  width: auto;
+  object-fit: contain;
   filter: grayscale(100%);
   opacity: 0.75;
-  transition: transform 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
-  max-height: 70px;
+  transition:
+    transform 0.3s ease,
+    filter 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .marquee-item:hover img {
@@ -120,6 +137,7 @@ textarea {
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(-50%);
   }
