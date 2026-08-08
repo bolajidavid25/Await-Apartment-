@@ -6,4 +6,4 @@
     { "source": "/logo copy.png", "destination": "/logo copy.png" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
-}[]
+}
