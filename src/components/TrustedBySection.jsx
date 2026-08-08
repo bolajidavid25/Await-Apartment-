@@ -80,7 +80,7 @@ const TrustedBySection = () => {
           }}
           className="mx-auto max-w-3xl text-center"
         >
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight color- white text-slate-900 sm:text-4xl">
             Trusted by Leading Partners
           </h2>
 
@@ -106,20 +106,43 @@ const TrustedBySection = () => {
           {/* Logo Marquee */}
           <div className="marquee-wrapper overflow-hidden rounded-[28px] bg-white/70 px-4 py-6 shadow-inner shadow-slate-200/40 sm:px-6">
             <div className="marquee-track">
-              {[...logos, ...logos].map((src, index) => (
-                <div
-                  key={`${src}-${index}`}
-                  className="marquee-item flex items-center justify-center px-4 py-2"
-                >
-                  <div className="flex h-20 items-center justify-center rounded-[24px] border border-slate-200/80 bg-white px-6 py-4 shadow-sm shadow-slate-200/50">
-                    <img
-                      src={src}
-                      alt="Trusted partner logo"
-                      className="h-14 max-h-[70px] w-auto object-contain transition duration-300"
-                    />
+
+              {/* First set */}
+              <div className="marquee-group">
+                {logos.map((src, index) => (
+                  <div
+                    key={`first-${src}-${index}`}
+                    className="marquee-item"
+                  >
+                    <div className="flex h-20 items-center justify-center rounded-[24px] border border-slate-200/80 bg-white px-6 py-4 shadow-sm shadow-slate-200/50">
+                      <img
+                        src={src}
+                        alt="Trusted partner logo"
+                        className="h-14 max-h-[70px] w-auto object-contain transition duration-300"
+                      />
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              {/* Identical second set */}
+              <div className="marquee-group" aria-hidden="true">
+                {logos.map((src, index) => (
+                  <div
+                    key={`second-${src}-${index}`}
+                    className="marquee-item"
+                  >
+                    <div className="flex h-20 items-center justify-center rounded-[24px] border border-slate-200/80 bg-white px-6 py-4 shadow-sm shadow-slate-200/50">
+                      <img
+                        src={src}
+                        alt=""
+                        className="h-14 max-h-[70px] w-auto object-contain transition duration-300"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
             </div>
           </div>
 

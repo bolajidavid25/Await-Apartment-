@@ -83,14 +83,16 @@ textarea {
 
 .marquee-wrapper {
   overflow: hidden;
+  width: 100%;
 }
 
 .marquee-track {
   display: flex;
   align-items: center;
   gap: 2.5rem;
-  animation: marquee 12s linear infinite;
+  animation: marquee 30s linear infinite;
   will-change: transform;
+  width: max-content;
 }
 
 .marquee-item {
@@ -116,7 +118,7 @@ textarea {
 
 @keyframes marquee {
   from {
-    transform: translateX(0%);
+    transform: translateX(0);
   }
   to {
     transform: translateX(-50%);
