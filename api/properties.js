@@ -64,7 +64,7 @@ export default async function handler(req, res) {
      */
     const properties = (data.data || [])
       .filter(
-        (property) => property.mlsHasPhotos === true
+        (property) => property.mlsHasPhotos === true && property.id ==='23229220'
       )
       .map((property) => ({
         id: property.id,

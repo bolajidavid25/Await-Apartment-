@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-
+import PropertyCard from '../components/PropertyCard'
 const Properties = () => {
   const [properties, setProperties] = useState([])
   const [loading, setLoading] = useState(true)
@@ -82,53 +82,14 @@ const Properties = () => {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {properties.map((property) => (
-            <div
-              key={property.id}
-              className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-900"
-            >
-              <div className="flex aspect-[4/3] items-center justify-center bg-slate-800">
-                <span className="text-sm text-slate-500">
-                  Property image unavailable
-                </span>
-              </div>
-
-              <div className="p-6">
-                <p className="text-2xl font-bold text-white">
-                  {property.price
-                    ? `$${property.price.toLocaleString()}`
-                    : 'Price unavailable'}
-                </p>
-
-                <p className="mt-3 text-slate-300">
-                  {property.address.full}
-                </p>
-
-                <p className="mt-1 text-sm text-slate-500">
-                  {property.address.city},{' '}
-                  {property.address.state}{' '}
-                  {property.address.zip}
-                </p>
-
-                <div className="mt-5 flex gap-4 text-sm text-slate-400">
-                  <span>
-                    {property.bedrooms ?? '—'} Beds
-                  </span>
-
-                  <span>
-                    {property.bathrooms ?? '—'} Baths
-                  </span>
-
-                  <span>
-                    {property.squareFeet
-                      ? `${property.squareFeet.toLocaleString()} sqft`
-                      : '—'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+            {properties.map((property) => (
+                <PropertyCard
+                    key={property.id}
+                    property={property}
+                    onClick={() => console.log('SELECTED PROPERTY:', property)}
+        />
+    ))}
+</div>
 
       </div>
     </main>
