@@ -1,15 +1,27 @@
 export default async function handler(req, res) {
-    
-  // Only allow GET requests
+  // CORS
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type, x-api-key'
+  )
+
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end()
+  }
+
+  // Only allow GET
   if (req.method !== 'GET') {
     return res.status(405).json({
       error: 'Method not allowed',
     })
   }
 
+  // Get private API key from Vercel environment variables
   const apiKey = process.env.REALESTATE_API_KEY
 
-  // Make sure the API key exists
   if (!apiKey) {
     console.error('REALESTATE_API_KEY is not configured')
 
@@ -23,10 +35,12 @@ export default async function handler(req, res) {
       'https://api.realestateapi.com/v2/PropertySearch',
       {
         method: 'POST',
+
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': apiKey,
         },
+
         body: JSON.stringify({
           size: 10,
           state: 'FL',
@@ -38,9 +52,10 @@ export default async function handler(req, res) {
 
     const data = await response.json()
 
-    if (!response.ok) {
-      console.error('RealEstateAPI error:', data)
+    console.log('RealEstateAPI STATUS:', response.status)
+    console.log('RealEstateAPI RESPONSE:', data)
 
+    if (!response.ok) {
       return res.status(response.status).json({
         error: 'RealEstateAPI request failed',
         details: data,
@@ -53,6 +68,7 @@ export default async function handler(req, res) {
 
     return res.status(500).json({
       error: 'Failed to fetch properties',
+      details: error.message,
     })
   }
 }
