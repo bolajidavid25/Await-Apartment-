@@ -9,8 +9,7 @@ import Testimonials from './components/Testimonials'
 import TrustedBySection from './components/TrustedBySection'
 import ContactForm from './components/ContactForm'
 import Footer from './components/Footer'
-
-import Properties from './pages/Properties'
+import Properties from './pages/properties'
 
 import useBrandColor from './utils/useBrandColor'
 import logo from './assets/logo.png'
