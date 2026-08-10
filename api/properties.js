@@ -1,10 +1,12 @@
-export default async function handler(req, res) {
+export default async function handler(req, res)          {
+    console.log('PROPERTIES API: NORMALISED VERSION RUNNING ')
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
   res.setHeader(
     'Access-Control-Allow-Headers',
     'Content-Type, x-api-key'
   )
+  res.setHeader('Cache-Control', 'no-store')
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end()
@@ -116,11 +118,12 @@ export default async function handler(req, res) {
       `Returning ${properties.length} properties with photo metadata`
     )
 
-    return res.status(200).json({
-      success: true,
-      count: properties.length,
-      properties,
-    })
+return res.status(200).json({
+  success: true,
+  version: 'normalized-v1',
+  count: properties.length,
+  properties,
+})
   } catch (error) {
     console.error('Property API error:', error)
 
@@ -129,4 +132,5 @@ export default async function handler(req, res) {
       details: error.message,
     })
   }
+    
 }
