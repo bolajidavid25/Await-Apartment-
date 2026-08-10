@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import PropertyCard from '../components/PropertyCard'
+import PropertyModal from '../components/PropertyModal'
 const Properties = () => {
   const [properties, setProperties] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [selectedProperty, setSelectedProperty] = useState(null)
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -86,10 +88,14 @@ const Properties = () => {
                 <PropertyCard
                     key={property.id}
                     property={property}
-                    onClick={() => console.log('SELECTED PROPERTY:', property)}
+                    onClick={() => setSelectedProperty(property)}
         />
     ))}
 </div>
+            <PropertyModal
+  property={selectedProperty}
+  onClose={() => setSelectedProperty(null)}
+/>
 
       </div>
     </main>
