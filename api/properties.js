@@ -48,17 +48,79 @@ export default async function handler(req, res) {
 
     const data = await response.json()
 
-    console.log('PROPERTY API STATUS:', response.status)
-    console.log('PROPERTY API RESPONSE:', data)
-
     if (!response.ok) {
+      console.error('RealEstateAPI error:', data)
+
       return res.status(response.status).json({
         error: 'RealEstateAPI request failed',
         details: data,
       })
     }
 
-    return res.status(200).json(data)
+    /*
+     * Normalize the external API response.
+     *
+     * We deliberately keep the frontend independent
+     * from RealEstateAPI's complicated object structure.
+     */
+
+    const properties = (data.data || [])
+      .filter((property) => property.mlsHasPhotos === true)
+      .map((property) => ({
+        id: property.id,
+
+        price: property.mlsListingPrice ?? null,
+
+        address: {
+          full: property.address?.address ?? null,
+          street: property.address?.street ?? null,
+          city: property.address?.city ?? null,
+          state: property.address?.state ?? null,
+          zip: property.address?.zip ?? null,
+        },
+
+        propertyType:
+          property.propertyUse ||
+          property.propertyType ||
+          'Residential',
+
+        bedrooms: property.bedrooms ?? null,
+
+        bathrooms: property.bathrooms ?? null,
+
+        squareFeet:
+          property.squareFeet ??
+          property.livingSquareFeet ??
+          null,
+
+        yearBuilt: property.yearBuilt ?? null,
+
+        status: property.mlsStatus ?? null,
+
+        listingType: property.mlsType ?? null,
+
+        daysOnMarket: property.mlsDaysOnMarket ?? null,
+
+        hasPhotos: property.mlsHasPhotos === true,
+
+        /*
+         * We don't have actual MLS image URLs yet.
+         * These will be populated when MLS access is available.
+         */
+        image: null,
+
+        photos: [],
+      }))
+
+    console.log(
+      `Returning ${properties.length} properties with photo metadata`
+    )
+
+    return res.status(200).json({
+      success: true,
+      count: properties.length,
+      properties,
+    })
   } catch (error) {
     console.error('Property API error:', error)
 
