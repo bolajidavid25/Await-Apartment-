@@ -48,7 +48,13 @@ export default async function handler(req, res) {
       }
     )
 
-    const data = await response.json()
+    console.log('REAL ESTATE API STATUS:', response.status)
+
+    const responseText = await response.text()
+
+    console.log('REAL ESTATE API RESPONSE:', responseText)
+
+    const data = JSON.parse(responseText)
 
     if (!response.ok) {
       console.error('RealEstateAPI error:', data)
@@ -64,7 +70,7 @@ export default async function handler(req, res) {
      */
     const properties = (data.data || [])
       .filter(
-        (property) => property.mlsHasPhotos === true && property.id ==='23229220'
+        (property) => property.mlsHasPhotos === true 
       )
       .map((property) => ({
         id: property.id,
@@ -125,12 +131,14 @@ export default async function handler(req, res) {
       count: properties.length,
       properties,
     })
-  } catch (error) {
-    console.error('Property API error:', error)
+} catch (error) {
+  console.error('PROPERTY API ERROR:', error)
 
-    return res.status(500).json({
-      error: 'Failed to fetch properties',
-      details: error.message,
-    })
-  }
+  return res.status(500).json({
+    success: false,
+    error: 'Failed to fetch properties',
+    message: error.message,
+    stack: error.stack,
+  })
+}
 }
