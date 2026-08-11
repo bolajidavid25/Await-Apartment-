@@ -12,19 +12,17 @@ const PropertyCard = ({ property, onClick }) => {
                   alt={property.address?.full || 'Property'}
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   onError={(event) => {
+                    console.error('IMAGE FAILED:', property.image)
                     event.currentTarget.style.display = 'none'
-                    event.currentTarget.nextElementSibling.style.display = 'flex'
                   }}
                 />
-              ) : null}
-
-              <div
-                className="hidden h-full w-full items-center justify-center"
-              >
-                <span className="text-sm text-slate-500">
-                  Property image unavailable
-                </span>
-              </div>
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  <span className="text-sm text-slate-500">
+                    Property image unavailable
+                  </span>
+                </div>
+              )}
             </div>
 
       {/* Property information */}

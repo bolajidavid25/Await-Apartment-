@@ -3,6 +3,7 @@ import PropertyCard from '../components/PropertyCard'
 import PropertyModal from '../components/PropertyModal'
 const Properties = () => {
   const [properties, setProperties] = useState([])
+  const [dataSource, setDataSource] = useState('live')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedProperty, setSelectedProperty] = useState(null)
@@ -21,7 +22,7 @@ const Properties = () => {
         }
 
         const data = await response.json()
-
+        setDataSource(data.source || 'live')
         console.log('NORMALIZED PROPERTY DATA:', data)
 
         setProperties(data.properties || [])
