@@ -108,13 +108,13 @@ export default async function handler(req, res) {
         hasPhotos: true,
 
 
-        image: `/properties/${property.id}/exterior.jpg`,
+        image: `/properties/${property.id}/exterior.png`,
 
             photos: [
-            `/properties/${property.id}/exterior.jpg`,
-            `/properties/${property.id}/living-room.jpg`,
-            `/properties/${property.id}/kitchen.jpg`,
-            `/properties/${property.id}/bedroom.jpg`,
+            `/properties/${property.id}/exterior.png`,
+            `/properties/${property.id}/living-room.png`,
+            `/properties/${property.id}/kitchen.png`,
+            `/properties/${property.id}/bedroom.png`,
             ],
       }))
 

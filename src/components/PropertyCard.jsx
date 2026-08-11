@@ -5,25 +5,27 @@ const PropertyCard = ({ property, onClick }) => {
       onClick={onClick}
       className="group w-full overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 text-left transition duration-300 hover:-translate-y-1 hover:border-slate-700 hover:shadow-2xl hover:shadow-black/30"
     >
-      {/* Property image */}
-      <div className="aspect-[4/3] overflow-hidden bg-slate-800">
-        {property.image ? (
-          <img
-            src={property.image}
-            alt={property.address?.full || 'Property'}
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-            onError={(event) => {
-              event.currentTarget.style.display = 'none'
-            }}
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center">
-            <span className="text-sm text-slate-500">
-              Property image unavailable
-            </span>
-          </div>
-        )}
-      </div>
+            <div className="aspect-[4/3] overflow-hidden bg-slate-800">
+              {property.image ? (
+                <img
+                  src={property.image}
+                  alt={property.address?.full || 'Property'}
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  onError={(event) => {
+                    event.currentTarget.style.display = 'none'
+                    event.currentTarget.nextElementSibling.style.display = 'flex'
+                  }}
+                />
+              ) : null}
+
+              <div
+                className="hidden h-full w-full items-center justify-center"
+              >
+                <span className="text-sm text-slate-500">
+                  Property image unavailable
+                </span>
+              </div>
+            </div>
 
       {/* Property information */}
       <div className="p-6">

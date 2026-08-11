@@ -13,7 +13,7 @@ const Properties = () => {
         setLoading(true)
 
         const response = await fetch(
-          'https://await-apartment.vercel.app/api/properties'
+          'https://awaitapartment.vercel.app/api/properties'
         )
 
         if (!response.ok) {

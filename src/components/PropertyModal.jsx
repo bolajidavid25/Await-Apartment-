@@ -1,13 +1,11 @@
 ﻿import { useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { X } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { X, Heart, Share2, MapPin, BedDouble, Bath, Ruler } from 'lucide-react'
 
 const PropertyModal = ({ property, onClose }) => {
   useEffect(() => {
     const handleEscape = (event) => {
-      if (event.key === 'Escape') {
-        onClose()
-      }
+      if (event.key === 'Escape') onClose()
     }
 
     if (!property) {
@@ -16,8 +14,8 @@ const PropertyModal = ({ property, onClose }) => {
     }
 
     const previousOverflow = document.body.style.overflow
-
     document.body.style.overflow = 'hidden'
+
     window.addEventListener('keydown', handleEscape)
 
     return () => {
@@ -30,254 +28,353 @@ const PropertyModal = ({ property, onClose }) => {
 
   const photos = property.photos || []
 
-  const exteriorImage = property.image || photos[0] || null
-  const livingRoomImage = photos[1] || null
-  const kitchenImage = photos[2] || null
-  const bedroomImage = photos[3] || null
+  const exteriorImage =
+    property.image || photos[0] || null
 
-  const rooms = [
-    {
-      name: 'Exterior',
-      image: exteriorImage,
-    },
-    {
-      name: 'Living Room',
-      image: livingRoomImage,
-    },
-    {
-      name: 'Kitchen',
-      image: kitchenImage,
-    },
-    {
-      name: 'Bedroom',
-      image: bedroomImage,
-    },
-  ]
+  const formatPrice = (price) => {
+    if (!price) return 'Price unavailable'
+
+    return `$${Number(price).toLocaleString()}`
+  }
 
   return (
-    <motion.div
-      className="fixed inset-0 z-[999] flex items-center justify-center overflow-y-auto bg-slate-950/95 px-4 py-4 backdrop-blur-xl sm:px-6 sm:py-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-    >
+    <AnimatePresence>
       <motion.div
-        className="relative my-4 max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-[32px] bg-slate-950 shadow-2xl shadow-black/50"
-        initial={{ y: 28, opacity: 0, scale: 0.98 }}
-        animate={{ y: 0, opacity: 1, scale: 1 }}
-        exit={{ y: 20, opacity: 0, scale: 0.98 }}
-        transition={{ duration: 0.25 }}
-        onClick={(event) => event.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="property-modal-title"
+        className="fixed inset-0 z-[999] flex items-center justify-center overflow-y-auto bg-slate-950/95 px-3 py-3 backdrop-blur-xl sm:px-6 sm:py-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
       >
-        {/* Close button */}
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close property details"
-          className="absolute right-5 top-5 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-slate-950/80 text-slate-300 backdrop-blur transition hover:bg-slate-800 hover:text-white"
+
+        <motion.div
+          className="relative my-3 w-full max-w-6xl overflow-hidden rounded-[30px] bg-slate-950 shadow-2xl shadow-black/60 sm:my-6 sm:rounded-[36px]"
+          initial={{
+            y: 30,
+            opacity: 0,
+            scale: 0.98,
+          }}
+          animate={{
+            y: 0,
+            opacity: 1,
+            scale: 1,
+          }}
+          exit={{
+            y: 20,
+            opacity: 0,
+            scale: 0.98,
+          }}
+          transition={{
+            duration: 0.25,
+          }}
+          onClick={(event) => event.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="property-modal-title"
         >
-          <X size={20} />
-        </button>
 
-        {/* Property content */}
-        <div className="grid gap-8 px-4 pb-6 pt-4 sm:px-6 lg:grid-cols-[0.95fr_0.7fr] lg:px-8 lg:pb-8 lg:pt-6">
-          {/* Main content */}
-          <div className="space-y-6">
-            {/* Property overview */}
-            <div className="rounded-[32px] border border-white/10 bg-slate-900/85 p-6">
-              <div className="flex flex-wrap items-start justify-between gap-4 pr-10">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.35em] text-[color:var(--brand)]/90">
-                    Property overview
-                  </p>
+          {/* =====================================================
+              HERO IMAGE
+          ====================================================== */}
 
-                  <h2
-                    id="property-modal-title"
-                    className="mt-3 text-3xl font-semibold text-white"
-                  >
-                    {property.address?.full || 'Property'}
-                  </h2>
+          <div className="relative h-[55vh] min-h-[420px] max-h-[650px] overflow-hidden">
 
-                  <p className="mt-2 text-sm text-slate-400">
-                    {property.address?.city || '—'} ·{' '}
-                    {property.status || '—'}
-                  </p>
-                </div>
+            {exteriorImage ? (
+              <img
+                src={exteriorImage}
+                alt={
+                  property.address?.full ||
+                  'Property exterior'
+                }
+                className="h-full w-full object-cover"
+                onError={(event) => {
+                  event.currentTarget.style.display = 'none'
+                }}
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center bg-slate-900">
+                <span className="text-sm text-slate-500">
+                  Property image unavailable
+                </span>
+              </div>
+            )}
 
-                <div className="rounded-full bg-[color:var(--brand)]/10 px-4 py-2 text-sm font-semibold text-[color:var(--brand)]">
-                  {property.price
-                    ? `$${property.price.toLocaleString()}`
-                    : 'Price unavailable'}
-                </div>
+            {/* Image gradient */}
+
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+
+            {/* Top controls */}
+
+            <div className="absolute left-4 right-4 top-4 flex items-center justify-between sm:left-6 sm:right-6 sm:top-6">
+
+              <div className="rounded-full border border-white/15 bg-black/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white backdrop-blur-md">
+                {property.status || 'Property'}
               </div>
 
-              {/* Description */}
-              <p className="mt-5 leading-7 text-slate-300">
-                A{' '}
-                {property.propertyType?.toLowerCase() ||
-                  'residential property'}{' '}
-                located in {property.address?.city || '—'},{' '}
-                {property.address?.state || '—'}. This property offers{' '}
-                {property.bedrooms ?? '—'} bedrooms,{' '}
-                {property.bathrooms ?? '—'} bathrooms and approximately{' '}
-                {property.squareFeet
-                  ? `${property.squareFeet.toLocaleString()} square feet`
-                  : 'an undisclosed floor area'}
-                .
-              </p>
+              <div className="flex items-center gap-2">
 
-              {/* Property stats */}
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-3xl bg-slate-950/80 p-5 text-slate-200">
-                  <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
-                    Floor size
-                  </p>
+                <button
+                  type="button"
+                  aria-label="Save property"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-black/30 text-white backdrop-blur-md transition hover:bg-white/15"
+                >
+                  <Heart size={18} />
+                </button>
 
-                  <p className="mt-3 text-xl font-semibold text-white">
-                    {property.squareFeet
-                      ? `${property.squareFeet.toLocaleString()} sqft`
-                      : '—'}
-                  </p>
-                </div>
+                <button
+                  type="button"
+                  aria-label="Share property"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-black/30 text-white backdrop-blur-md transition hover:bg-white/15"
+                >
+                  <Share2 size={18} />
+                </button>
 
-                <div className="rounded-3xl bg-slate-950/80 p-5 text-slate-200">
-                  <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
-                    Bedrooms / Bathrooms
-                  </p>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close property"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-black/30 text-white backdrop-blur-md transition hover:bg-white/15"
+                >
+                  <X size={19} />
+                </button>
 
-                  <p className="mt-3 text-xl font-semibold text-white">
-                    {property.bedrooms ?? '—'} /{' '}
-                    {property.bathrooms ?? '—'}
-                  </p>
-                </div>
               </div>
             </div>
 
-            {/* Property images */}
-            <div className="grid gap-4">
-              {rooms.map((room) => (
-                <div
-                  key={room.name}
-                  className="rounded-[32px] border border-white/10 bg-slate-950/85 p-6"
-                >
-                  <p className="text-sm uppercase tracking-[0.28em] text-[color:var(--brand)]/80">
-                    {room.name}
-                  </p>
+            {/* Hero information */}
 
-                  <div className="mt-4 overflow-hidden rounded-3xl">
-                    {room.image ? (
-                      <img
-                        src={room.image}
-                        alt={`${property.address?.full || 'Property'} ${room.name}`}
-                        className="h-72 w-full object-cover transition duration-500 hover:scale-[1.02]"
-                      />
-                    ) : (
-                      <div className="flex h-72 items-center justify-center bg-slate-900">
-                        <span className="text-sm text-slate-500">
-                          Image unavailable
-                        </span>
-                      </div>
-                    )}
-                  </div>
+            <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8 lg:p-10">
+
+              <div className="max-w-3xl">
+
+                <p className="mb-3 text-sm font-semibold uppercase tracking-[0.28em] text-[color:var(--brand)]">
+                  {property.propertyType || 'Residential Property'}
+                </p>
+
+                <h2
+                  id="property-modal-title"
+                  className="text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl"
+                >
+                  {formatPrice(property.price)}
+                </h2>
+
+                <div className="mt-4 flex items-start gap-2 text-sm text-slate-200 sm:text-base">
+                  <MapPin
+                    size={19}
+                    className="mt-0.5 shrink-0 text-[color:var(--brand)]"
+                  />
+
+                  <span>
+                    {property.address?.full ||
+                      'Address unavailable'}
+                  </span>
                 </div>
-              ))}
+
+              </div>
             </div>
           </div>
 
-          {/* Sidebar */}
-          <aside className="h-fit space-y-6 rounded-[32px] border border-white/10 bg-slate-900/85 p-6 shadow-2xl shadow-slate-950/30">
-            {/* Property details */}
-            <div className="space-y-4">
-              <p className="text-sm uppercase tracking-[0.28em] text-[color:var(--brand)]/90">
-                Property Details
-              </p>
+          {/* =====================================================
+              PROPERTY STATS
+          ====================================================== */}
 
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                {/* Year Built */}
-                <div className="rounded-3xl border border-white/10 bg-slate-950/80 px-4 py-3">
-                  <span className="text-sm text-slate-500">
-                    Year Built
-                  </span>
+          <div className="grid grid-cols-3 border-b border-white/10 bg-slate-900/80">
 
-                  <p className="mt-1 font-semibold text-white">
-                    {property.yearBuilt || '—'}
-                  </p>
-                </div>
+            <div className="flex flex-col items-center justify-center gap-2 border-r border-white/10 px-3 py-5 text-center sm:flex-row sm:gap-3 sm:py-6">
 
-                {/* Property Type */}
-                <div className="rounded-3xl border border-white/10 bg-slate-950/80 px-4 py-3">
-                  <span className="text-sm text-slate-500">
-                    Property Type
-                  </span>
+              <BedDouble
+                size={21}
+                className="text-[color:var(--brand)]"
+              />
 
-                  <p className="mt-1 font-semibold text-white">
-                    {property.propertyType || '—'}
-                  </p>
-                </div>
+              <div>
+                <p className="text-lg font-semibold text-white">
+                  {property.bedrooms ?? '—'}
+                </p>
 
-                {/* Status */}
-                <div className="rounded-3xl border border-white/10 bg-slate-950/80 px-4 py-3">
-                  <span className="text-sm text-slate-500">
-                    Status
-                  </span>
-
-                  <p className="mt-1 font-semibold text-white">
-                    {property.status || '—'}
-                  </p>
-                </div>
-
-                {/* Listing Type */}
-                <div className="rounded-3xl border border-white/10 bg-slate-950/80 px-4 py-3">
-                  <span className="text-sm text-slate-500">
-                    Listing Type
-                  </span>
-
-                  <p className="mt-1 font-semibold text-white">
-                    {property.listingType || '—'}
-                  </p>
-                </div>
-
-                {/* Days on Market */}
-                <div className="rounded-3xl border border-white/10 bg-slate-950/80 px-4 py-3">
-                  <span className="text-sm text-slate-500">
-                    Days on Market
-                  </span>
-
-                  <p className="mt-1 font-semibold text-white">
-                    {property.daysOnMarket ?? '—'}
-                  </p>
-                </div>
+                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500 sm:text-xs">
+                  Bedrooms
+                </p>
               </div>
+
             </div>
 
-            {/* Book inspection */}
-            <div className="rounded-[28px] bg-[color:var(--brand)]/10 p-5 text-slate-100">
-              <p className="text-sm uppercase tracking-[0.28em] text-[color:var(--brand)]">
-                Book inspection
-              </p>
+            <div className="flex flex-col items-center justify-center gap-2 border-r border-white/10 px-3 py-5 text-center sm:flex-row sm:gap-3 sm:py-6">
 
-              <p className="mt-3 text-base leading-7 text-slate-200">
-                Schedule a private walkthrough with our team and
-                receive the full property details.
-              </p>
+              <Bath
+                size={21}
+                className="text-[color:var(--brand)]"
+              />
+
+              <div>
+                <p className="text-lg font-semibold text-white">
+                  {property.bathrooms ?? '—'}
+                </p>
+
+                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500 sm:text-xs">
+                  Bathrooms
+                </p>
+              </div>
+
             </div>
 
-            {/* Contact button */}
-            <a
-              href="#contact"
-              onClick={onClose}
-              className="inline-flex w-full items-center justify-center rounded-full bg-[color:var(--brand)] px-5 py-4 text-sm font-semibold uppercase tracking-[0.22em] text-[color:var(--brand-contrast)] transition hover:bg-[color:var(--brand)]/90"
-            >
-              Book Inspection
-            </a>
-          </aside>
-        </div>
+            <div className="flex flex-col items-center justify-center gap-2 px-3 py-5 text-center sm:flex-row sm:gap-3 sm:py-6">
+
+              <Ruler
+                size={21}
+                className="text-[color:var(--brand)]"
+              />
+
+              <div>
+                <p className="text-lg font-semibold text-white">
+                  {property.squareFeet
+                    ? property.squareFeet.toLocaleString()
+                    : '—'}
+                </p>
+
+                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500 sm:text-xs">
+                  Sq Ft
+                </p>
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* =====================================================
+              CONTENT
+          ====================================================== */}
+
+          <div className="grid gap-8 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[1fr_340px] lg:px-8">
+
+            {/* Main content */}
+
+            <div className="space-y-8">
+
+              {/* Overview */}
+
+              <section>
+
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--brand)]">
+                  Property Overview
+                </p>
+
+                <h3 className="mt-3 text-2xl font-semibold text-white">
+                  About this property
+                </h3>
+
+                <p className="mt-4 max-w-3xl leading-7 text-slate-400">
+                  A{' '}
+                  {property.propertyType?.toLowerCase() ||
+                    'residential property'}{' '}
+                  located in{' '}
+                  {property.address?.city || 'Florida'},{' '}
+                  {property.address?.state || 'FL'}.
+                  This property offers{' '}
+                  {property.bedrooms ?? '—'} bedrooms,
+                  {' '}
+                  {property.bathrooms ?? '—'} bathrooms and
+                  approximately{' '}
+                  {property.squareFeet
+                    ? `${property.squareFeet.toLocaleString()} square feet`
+                    : 'an undisclosed floor area'}.
+                </p>
+
+              </section>
+
+              {/* Property details */}
+
+              <section>
+
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--brand)]">
+                  Property Details
+                </p>
+
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+
+                  <div className="rounded-3xl border border-white/10 bg-slate-900/70 p-5">
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+                      Year Built
+                    </p>
+
+                    <p className="mt-2 text-lg font-semibold text-white">
+                      {property.yearBuilt || '—'}
+                    </p>
+                  </div>
+
+                  <div className="rounded-3xl border border-white/10 bg-slate-900/70 p-5">
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+                      Days on Market
+                    </p>
+
+                    <p className="mt-2 text-lg font-semibold text-white">
+                      {property.daysOnMarket ?? '—'}
+                    </p>
+                  </div>
+
+                  <div className="rounded-3xl border border-white/10 bg-slate-900/70 p-5">
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+                      Listing Type
+                    </p>
+
+                    <p className="mt-2 text-lg font-semibold text-white">
+                      {property.listingType || '—'}
+                    </p>
+                  </div>
+
+                  <div className="rounded-3xl border border-white/10 bg-slate-900/70 p-5">
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+                      Status
+                    </p>
+
+                    <p className="mt-2 text-lg font-semibold text-white">
+                      {property.status || '—'}
+                    </p>
+                  </div>
+
+                </div>
+
+              </section>
+
+            </div>
+
+            {/* CTA */}
+
+            <aside className="lg:sticky lg:top-6 lg:self-start">
+
+              <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-6">
+
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--brand)]">
+                  Interested?
+                </p>
+
+                <h3 className="mt-3 text-2xl font-semibold text-white">
+                  See this property in person.
+                </h3>
+
+                <p className="mt-3 text-sm leading-6 text-slate-400">
+                  Schedule a private inspection with the
+                  Await Apartment team.
+                </p>
+
+                <a
+                  href="#contact"
+                  onClick={onClose}
+                  className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[color:var(--brand)] px-5 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-contrast)] transition hover:opacity-90"
+                >
+                  Book Inspection
+                </a>
+
+              </div>
+
+            </aside>
+
+          </div>
+
+        </motion.div>
+
       </motion.div>
-    </motion.div>
+    </AnimatePresence>
   )
 }
 
