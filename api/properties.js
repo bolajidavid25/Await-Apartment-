@@ -1,4 +1,10 @@
+import fallbackProperties from './fallbackProperties'
+
 export default async function handler(req, res) {
+  // --------------------------------------------------
+  // CORS
+  // --------------------------------------------------
+
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
   res.setHeader(
@@ -18,49 +24,11 @@ export default async function handler(req, res) {
     })
   }
 
+  // --------------------------------------------------
+  // API KEY
+  // --------------------------------------------------
+
   const apiKey = process.env.REALESTATE_API_KEY
-
-  // --------------------------------------------------
-  // FALLBACK PROPERTY
-  // --------------------------------------------------
-
-  const fallbackProperties = [
-    {
-      id: '229694294',
-
-      price: 475000,
-
-      address: {
-        full: '4090 Manchester Ct, Pace, FL 32571',
-        street: '4090 Manchester Ct',
-        city: 'Pace',
-        state: 'FL',
-        zip: '32571',
-      },
-
-      propertyType: 'Single Family Residence',
-
-      bedrooms: 4,
-      bathrooms: 2,
-      squareFeet: 2474,
-      yearBuilt: 2021,
-
-      status: 'Active',
-      listingType: 'ForSale',
-      daysOnMarket: 110,
-
-      hasPhotos: true,
-
-      image: '/properties/229694294/exterior.png',
-
-      photos: [
-        '/properties/229694294/exterior.png',
-        '/properties/229694294/living-room.png',
-        '/properties/229694294/kitchen.png',
-        '/properties/229694294/bedroom.png',
-      ],
-    },
-  ]
 
   // --------------------------------------------------
   // NO API KEY → FALLBACK
@@ -132,7 +100,7 @@ export default async function handler(req, res) {
           property.mlsHasPhotos === true
       )
       .map((property) => ({
-        id: property.id,
+        id: String(property.id),
 
         price: property.mlsListingPrice ?? null,
 
@@ -166,6 +134,7 @@ export default async function handler(req, res) {
 
         hasPhotos: true,
 
+        // Our controlled image structure
         image: `/properties/${property.id}/exterior.png`,
 
         photos: [
@@ -195,7 +164,24 @@ export default async function handler(req, res) {
     }
 
     // --------------------------------------------------
-    // LIVE SUCCESS
+    // MERGE LIVE + CURATED PROPERTIES
+    // --------------------------------------------------
+
+    const mergedProperties = [
+      ...fallbackProperties,
+
+      ...properties.filter(
+        (liveProperty) =>
+          !fallbackProperties.some(
+            (fallbackProperty) =>
+              String(fallbackProperty.id) ===
+              String(liveProperty.id)
+          )
+      ),
+    ]
+
+    // --------------------------------------------------
+    // CACHE
     // --------------------------------------------------
 
     res.setHeader(
@@ -203,12 +189,16 @@ export default async function handler(req, res) {
       's-maxage=300, stale-while-revalidate=600'
     )
 
+    // --------------------------------------------------
+    // LIVE + CURATED SUCCESS
+    // --------------------------------------------------
+
     return res.status(200).json({
       success: true,
       version: 'normalized-v1',
-      source: 'live',
-      count: properties.length,
-      properties,
+      source: 'live+curated',
+      count: mergedProperties.length,
+      properties: mergedProperties,
     })
   } catch (error) {
     // --------------------------------------------------
