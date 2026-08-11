@@ -1,4 +1,4 @@
-import fallbackProperties from './fallbackProperties'
+import fallbackProperties from './fallbackProperties.js'
 
 export default async function handler(req, res) {
   // --------------------------------------------------
@@ -12,12 +12,18 @@ export default async function handler(req, res) {
     'Content-Type, x-api-key'
   )
 
-  // Browser preflight
+  // --------------------------------------------------
+  // OPTIONS / PREFLIGHT
+  // --------------------------------------------------
+
   if (req.method === 'OPTIONS') {
     return res.status(200).end()
   }
 
-  // Only allow GET
+  // --------------------------------------------------
+  // ONLY ALLOW GET
+  // --------------------------------------------------
+
   if (req.method !== 'GET') {
     return res.status(405).json({
       error: 'Method not allowed',
@@ -49,7 +55,7 @@ export default async function handler(req, res) {
   }
 
   // --------------------------------------------------
-  // LIVE REAL ESTATE API
+  // LIVE API
   // --------------------------------------------------
 
   try {
@@ -99,51 +105,58 @@ export default async function handler(req, res) {
         (property) =>
           property.mlsHasPhotos === true
       )
-      .map((property) => ({
-        id: String(property.id),
+      .map((property) => {
+        const id = String(property.id)
 
-        price: property.mlsListingPrice ?? null,
+        return {
+          id,
 
-        address: {
-          full: property.address?.address ?? null,
-          street: property.address?.street ?? null,
-          city: property.address?.city ?? null,
-          state: property.address?.state ?? null,
-          zip: property.address?.zip ?? null,
-        },
+          price: property.mlsListingPrice ?? null,
 
-        propertyType:
-          property.propertyUse ||
-          property.propertyType ||
-          'Residential',
+          address: {
+            full: property.address?.address ?? null,
+            street: property.address?.street ?? null,
+            city: property.address?.city ?? null,
+            state: property.address?.state ?? null,
+            zip: property.address?.zip ?? null,
+          },
 
-        bedrooms: property.bedrooms ?? null,
+          propertyType:
+            property.propertyUse ||
+            property.propertyType ||
+            'Residential',
 
-        bathrooms: property.bathrooms ?? null,
+          bedrooms: property.bedrooms ?? null,
 
-        squareFeet: property.squareFeet ?? null,
+          bathrooms: property.bathrooms ?? null,
 
-        yearBuilt: property.yearBuilt ?? null,
+          squareFeet: property.squareFeet ?? null,
 
-        status: property.mlsStatus ?? null,
+          yearBuilt: property.yearBuilt ?? null,
 
-        listingType: property.mlsType ?? null,
+          status: property.mlsStatus ?? null,
 
-        daysOnMarket:
-          property.mlsDaysOnMarket ?? null,
+          listingType: property.mlsType ?? null,
 
-        hasPhotos: true,
+          daysOnMarket:
+            property.mlsDaysOnMarket ?? null,
 
-        // Our controlled image structure
-        image: `/properties/${property.id}/exterior.png`,
+          hasPhotos: true,
 
-        photos: [
-          `/properties/${property.id}/exterior.png`,
-          `/properties/${property.id}/living-room.png`,
-          `/properties/${property.id}/kitchen.png`,
-          `/properties/${property.id}/bedroom.png`,
-        ],
-      }))
+          // --------------------------------------------------
+          // CONTROLLED IMAGE PATHS
+          // --------------------------------------------------
+
+          image: `/properties/${id}/exterior.png`,
+
+          photos: [
+            `/properties/${id}/exterior.png`,
+            `/properties/${id}/living-room.png`,
+            `/properties/${id}/kitchen.png`,
+            `/properties/${id}/bedroom.png`,
+          ],
+        }
+      })
 
     // --------------------------------------------------
     // NO LIVE RESULTS → FALLBACK
@@ -164,7 +177,7 @@ export default async function handler(req, res) {
     }
 
     // --------------------------------------------------
-    // MERGE LIVE + CURATED PROPERTIES
+    // MERGE FALLBACK + LIVE
     // --------------------------------------------------
 
     const mergedProperties = [
@@ -190,7 +203,7 @@ export default async function handler(req, res) {
     )
 
     // --------------------------------------------------
-    // LIVE + CURATED SUCCESS
+    // SUCCESS
     // --------------------------------------------------
 
     return res.status(200).json({
@@ -200,6 +213,7 @@ export default async function handler(req, res) {
       count: mergedProperties.length,
       properties: mergedProperties,
     })
+
   } catch (error) {
     // --------------------------------------------------
     // UNEXPECTED ERROR → FALLBACK

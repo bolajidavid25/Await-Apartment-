@@ -1,6 +1,7 @@
 const fallbackProperties = [
   {
     id: '229694294',
+
     price: 475000,
 
     address: {
