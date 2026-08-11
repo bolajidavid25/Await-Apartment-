@@ -1,7 +1,3 @@
-import fallbackProperties from '../src/data/fallbackProperties'
-
-
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
@@ -10,7 +6,7 @@ export default async function handler(req, res) {
     'Content-Type, x-api-key'
   )
 
-  // Handle browser preflight
+  // Browser preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).end()
   }
@@ -24,98 +20,55 @@ export default async function handler(req, res) {
 
   const apiKey = process.env.REALESTATE_API_KEY
 
-  if (!apiKey) {
-    console.error('REALESTATE_API_KEY is not configured')
+  // --------------------------------------------------
+  // FALLBACK PROPERTY
+  // --------------------------------------------------
 
-    return res.status(500).json({
-      error: 'Real estate API is not configured',
-    })
-  }
-
-  try {
-  const response = await fetch(
-    'https://api.realestateapi.com/v2/PropertySearch',
+  const fallbackProperties = [
     {
-      method: 'POST',
+      id: '229694294',
 
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-      },
-
-      body: JSON.stringify({
-        size: 20,
-        state: 'FL',
-        mls_active: true,
-        property_type: 'SFR',
-      }),
-    }
-  )
-
-  const data = await response.json()
-
-  if (!response.ok) {
-    console.error('RealEstateAPI error:', data)
-
-    return res.status(200).json({
-      success: true,
-      version: 'fallback-v1',
-      source: 'fallback',
-      count: fallbackProperties.length,
-      properties: fallbackProperties,
-    })
-  }
-
-  const properties = (data.data || [])
-    .filter(
-      (property) => property.mlsHasPhotos === true
-    )
-    .map((property) => ({
-      id: property.id,
-
-      price: property.mlsListingPrice ?? null,
+      price: 475000,
 
       address: {
-        full: property.address?.address ?? null,
-        street: property.address?.street ?? null,
-        city: property.address?.city ?? null,
-        state: property.address?.state ?? null,
-        zip: property.address?.zip ?? null,
+        full: '4090 Manchester Ct, Pace, FL 32571',
+        street: '4090 Manchester Ct',
+        city: 'Pace',
+        state: 'FL',
+        zip: '32571',
       },
 
-      propertyType:
-        property.propertyUse ||
-        property.propertyType ||
-        'Residential',
+      propertyType: 'Single Family Residence',
 
-      bedrooms: property.bedrooms ?? null,
-      bathrooms: property.bathrooms ?? null,
-      squareFeet: property.squareFeet ?? null,
-      yearBuilt: property.yearBuilt ?? null,
+      bedrooms: 4,
+      bathrooms: 2,
+      squareFeet: 2474,
+      yearBuilt: 2021,
 
-      status: property.mlsStatus ?? null,
-      listingType: property.mlsType ?? null,
-
-      daysOnMarket:
-        property.mlsDaysOnMarket ?? null,
+      status: 'Active',
+      listingType: 'ForSale',
+      daysOnMarket: 110,
 
       hasPhotos: true,
 
-      image: `/properties/${property.id}/exterior.png`,
+      image: '/properties/229694294/exterior.png',
 
       photos: [
-        `/properties/${property.id}/exterior.png`,
-        `/properties/${property.id}/living-room.png`,
-        `/properties/${property.id}/kitchen.png`,
-        `/properties/${property.id}/bedroom.png`,
+        '/properties/229694294/exterior.png',
+        '/properties/229694294/living-room.png',
+        '/properties/229694294/kitchen.png',
+        '/properties/229694294/bedroom.png',
       ],
-    }))
+    },
+  ]
 
-  // If live API returned no usable properties,
-  // use our fallback dataset.
-  if (properties.length === 0) {
+  // --------------------------------------------------
+  // NO API KEY → FALLBACK
+  // --------------------------------------------------
+
+  if (!apiKey) {
     console.warn(
-      'Live API returned no usable properties. Using fallback.'
+      'REALESTATE_API_KEY is not configured. Using fallback properties.'
     )
 
     return res.status(200).json({
@@ -127,25 +80,149 @@ export default async function handler(req, res) {
     })
   }
 
-  // Live API worked.
-  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600')
+  // --------------------------------------------------
+  // LIVE REAL ESTATE API
+  // --------------------------------------------------
 
-  return res.status(200).json({
-    success: true,
-    version: 'normalized-v1',
-    source: 'live',
-    count: properties.length,
-    properties,
-  })
-} catch (error) {
-  console.error('Property API error:', error)
+  try {
+    const response = await fetch(
+      'https://api.realestateapi.com/v2/PropertySearch',
+      {
+        method: 'POST',
 
-  return res.status(200).json({
-    success: true,
-    version: 'fallback-v1',
-    source: 'fallback',
-    count: fallbackProperties.length,
-    properties: fallbackProperties,
-  })
-}
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+        },
+
+        body: JSON.stringify({
+          size: 20,
+          state: 'FL',
+          mls_active: true,
+          property_type: 'SFR',
+        }),
+      }
+    )
+
+    const data = await response.json()
+
+    // --------------------------------------------------
+    // LIVE API ERROR → FALLBACK
+    // --------------------------------------------------
+
+    if (!response.ok) {
+      console.error('RealEstateAPI error:', data)
+
+      return res.status(200).json({
+        success: true,
+        version: 'fallback-v1',
+        source: 'fallback',
+        count: fallbackProperties.length,
+        properties: fallbackProperties,
+      })
+    }
+
+    // --------------------------------------------------
+    // NORMALIZE LIVE PROPERTIES
+    // --------------------------------------------------
+
+    const properties = (data.data || [])
+      .filter(
+        (property) =>
+          property.mlsHasPhotos === true
+      )
+      .map((property) => ({
+        id: property.id,
+
+        price: property.mlsListingPrice ?? null,
+
+        address: {
+          full: property.address?.address ?? null,
+          street: property.address?.street ?? null,
+          city: property.address?.city ?? null,
+          state: property.address?.state ?? null,
+          zip: property.address?.zip ?? null,
+        },
+
+        propertyType:
+          property.propertyUse ||
+          property.propertyType ||
+          'Residential',
+
+        bedrooms: property.bedrooms ?? null,
+
+        bathrooms: property.bathrooms ?? null,
+
+        squareFeet: property.squareFeet ?? null,
+
+        yearBuilt: property.yearBuilt ?? null,
+
+        status: property.mlsStatus ?? null,
+
+        listingType: property.mlsType ?? null,
+
+        daysOnMarket:
+          property.mlsDaysOnMarket ?? null,
+
+        hasPhotos: true,
+
+        image: `/properties/${property.id}/exterior.png`,
+
+        photos: [
+          `/properties/${property.id}/exterior.png`,
+          `/properties/${property.id}/living-room.png`,
+          `/properties/${property.id}/kitchen.png`,
+          `/properties/${property.id}/bedroom.png`,
+        ],
+      }))
+
+    // --------------------------------------------------
+    // NO LIVE RESULTS → FALLBACK
+    // --------------------------------------------------
+
+    if (properties.length === 0) {
+      console.warn(
+        'Live API returned no usable properties. Using fallback.'
+      )
+
+      return res.status(200).json({
+        success: true,
+        version: 'fallback-v1',
+        source: 'fallback',
+        count: fallbackProperties.length,
+        properties: fallbackProperties,
+      })
+    }
+
+    // --------------------------------------------------
+    // LIVE SUCCESS
+    // --------------------------------------------------
+
+    res.setHeader(
+      'Cache-Control',
+      's-maxage=300, stale-while-revalidate=600'
+    )
+
+    return res.status(200).json({
+      success: true,
+      version: 'normalized-v1',
+      source: 'live',
+      count: properties.length,
+      properties,
+    })
+  } catch (error) {
+    // --------------------------------------------------
+    // UNEXPECTED ERROR → FALLBACK
+    // --------------------------------------------------
+
+    console.error('Property API error:', error)
+
+    return res.status(200).json({
+      success: true,
+      version: 'fallback-v1',
+      source: 'fallback',
+      count: fallbackProperties.length,
+      properties: fallbackProperties,
+    })
+  }
 }

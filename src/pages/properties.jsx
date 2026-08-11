@@ -96,8 +96,13 @@ const Properties = () => {
             <PropertyModal
   property={selectedProperty}
   onClose={() => setSelectedProperty(null)}
-/>
 
+/>
+{dataSource === 'fallback' && (
+  <p className="mb-6 rounded-2xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+    Showing our curated property collection while live listings refresh.
+  </p>
+)}
       </div>
     </main>
   )
