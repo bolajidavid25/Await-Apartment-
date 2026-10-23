@@ -27,30 +27,48 @@ export default function useBrandColor(logoSrc) {
           g = 0,
           b = 0,
           count = 0
-        // sample every 4th pixel to be faster
-        for (let i = 0; i < data.length; i += 16) {
-          r += data[i]
-          g += data[i + 1]
-          b += data[i + 2]
-          count++
+
+        // Sample pixels, filtering out transparent and near-white background pixels
+        for (let i = 0; i < data.length; i += 4) {
+          const alpha = data[i + 3]
+          const red = data[i]
+          const green = data[i + 1]
+          const blue = data[i + 2]
+
+          // Ignore transparent and pure/near-white pixels
+          if (alpha > 80 && !(red > 235 && green > 235 && blue > 235)) {
+            // Prioritize saturated/vibrant colors from the logo
+            r += red
+            g += green
+            b += blue
+            count++
+          }
         }
-        r = Math.round(r / count)
-        g = Math.round(g / count)
-        b = Math.round(b / count)
 
-        const toHex = (v) => v.toString(16).padStart(2, '0')
-        const hex = `#${toHex(r)}${toHex(g)}${toHex(b)}`
+        let hex = '#0ea5a4'
+        if (count > 0) {
+          const avgR = Math.round(r / count)
+          const avgG = Math.round(g / count)
+          const avgB = Math.round(b / count)
+          const toHex = (v) => v.toString(16).padStart(2, '0')
+          hex = `#${toHex(avgR)}${toHex(avgG)}${toHex(avgB)}`
+        }
 
-        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-        const contrast = luminance > 0.5 ? '#0f172a' : '#ffffff'
+        // Ensure primary accent is vibrant
+        const primaryBrand = count > 0 ? hex : '#0ea5a4'
+        const brandSecondary = '#38bdf8'
 
-        document.documentElement.style.setProperty('--brand', hex)
-        document.documentElement.style.setProperty('--brand-contrast', contrast)
-        document.documentElement.style.setProperty('--brand-600', hex)
-        document.documentElement.style.setProperty('--brand-400', hex)
+        document.documentElement.style.setProperty('--brand', primaryBrand)
+        document.documentElement.style.setProperty('--brand-secondary', brandSecondary)
+        document.documentElement.style.setProperty('--brand-contrast', '#ffffff')
+        document.documentElement.style.setProperty('--brand-soft', 'rgba(14, 165, 164, 0.16)')
+        document.documentElement.style.setProperty('--brand-600', '#0d9488')
+        document.documentElement.style.setProperty('--brand-400', '#2dd4bf')
       } catch {
         document.documentElement.style.setProperty('--brand', '#0ea5a4')
+        document.documentElement.style.setProperty('--brand-secondary', '#38bdf8')
         document.documentElement.style.setProperty('--brand-contrast', '#ffffff')
+        document.documentElement.style.setProperty('--brand-soft', 'rgba(14, 165, 164, 0.16)')
       }
     }
 

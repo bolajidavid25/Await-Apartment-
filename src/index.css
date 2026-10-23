@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 :root {
   color-scheme: dark;
@@ -41,35 +41,19 @@ textarea {
   min-height: 100vh;
 }
 
-.gemini-border {
-  position: absolute;
-  inset: 0;
-  border-radius: 32px;
+@property --border-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
 }
 
-.gemini-border::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: conic-gradient(
-    #ff1f6d,
-    #ff753e,
-    #ffaa01,
-    #412fa6,
-    #2d6cbf,
-    #00bcab,
-    #ff1f6d
-  );
-  animation: rotateGemini 18s linear infinite;
-}
-
-.gemini-border::after {
-  content: '';
-  position: absolute;
-  inset: 1px;
-  border-radius: calc(32px - 1px);
-  background: #0f172a;
+@keyframes spinGradientBorder {
+  0% {
+    --border-angle: 0deg;
+  }
+  100% {
+    --border-angle: 360deg;
+  }
 }
 
 @keyframes rotateGemini {
@@ -79,6 +63,81 @@ textarea {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Continuous rotating multicolor gradient border around hero information card */
+.hero-gradient-border-wrapper {
+  position: relative;
+  border-radius: 32px;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--border-angle),
+    #ff1f6d,
+    #fb8035,
+    #ffaa01,
+    #00bcab,
+    #2d6cbf,
+    #412fa6,
+    #ff1f6d
+  );
+  animation: spinGradientBorder 7s linear infinite;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.hero-gradient-border-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 34px;
+  background: conic-gradient(
+    from var(--border-angle),
+    #ff1f6d,
+    #fb8035,
+    #ffaa01,
+    #00bcab,
+    #2d6cbf,
+    #412fa6,
+    #ff1f6d
+  );
+  animation: spinGradientBorder 7s linear infinite;
+  filter: blur(14px);
+  opacity: 0.4;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Backward-compatible .gemini-border */
+.gemini-border {
+  position: absolute;
+  inset: 0;
+  border-radius: 32px;
+  pointer-events: none;
+}
+
+.gemini-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--border-angle),
+    #ff1f6d,
+    #fb8035,
+    #ffaa01,
+    #00bcab,
+    #2d6cbf,
+    #412fa6,
+    #ff1f6d
+  );
+  animation: spinGradientBorder 7s linear infinite;
+}
+
+.gemini-border::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: calc(32px - 2px);
+  background: #090d16;
 }
 
 .marquee-wrapper {
@@ -144,8 +203,11 @@ textarea {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track {
-    animation: none;
+  .marquee-track,
+  .hero-gradient-border-wrapper,
+  .hero-gradient-border-wrapper::after,
+  .gemini-border::before {
+    animation: none !important;
   }
 }
 

@@ -1,4 +1,4 @@
-﻿import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import Navbar from './components/Navbar'
 import HeroSlider from './components/HeroSlider'
@@ -17,7 +17,7 @@ import logo from './assets/logo.png'
 
 const Home = () => {
   return (
-    <main className="pt-[104px]">
+    <main className="relative">
       <HeroSlider />
       <About />
       <HowItWorks />
