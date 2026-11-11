@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import properties from '../data/properties'
 import PropertyModal from './PropertyModal'
+import { formatPrice } from '../utils/formatPrice'
 
 const heroShapes = [
   {
@@ -324,7 +325,7 @@ const HeroSlider = () => {
                           <div>
                             <span className="text-[10px] uppercase tracking-[0.24em] text-slate-400">Market Value</span>
                             <p className="font-serif text-2xl font-bold tracking-tight text-white sm:text-[26px]">
-                              {property.price}
+                              {formatPrice(property?.price)}
                             </p>
                           </div>
 

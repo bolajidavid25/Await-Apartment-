@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test": "node --test",
     "server": "node server/server.js",
     "server:dev": "nodemon server/server.js"
   },

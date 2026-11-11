@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { formatPrice } from '../utils/formatPrice'
 import {
   X,
   CalendarDays,
@@ -215,27 +216,6 @@ const InspectionModal = ({
     }
   }
 
-  // --------------------------------------------------
-  // FORMAT PRICE
-  // --------------------------------------------------
-
-  const formatPrice = (price) => {
-    if (
-      price === null ||
-      price === undefined ||
-      price === ''
-    ) {
-      return 'Price unavailable'
-    }
-
-    const numericPrice = Number(price)
-
-    if (Number.isNaN(numericPrice)) {
-      return 'Price unavailable'
-    }
-
-    return `$${numericPrice.toLocaleString()}`
-  }
 
   // --------------------------------------------------
   // MINIMUM DATE

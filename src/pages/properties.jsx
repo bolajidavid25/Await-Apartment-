@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import PropertyCard from '../components/PropertyCard'
 import PropertyModal from '../components/PropertyModal'
+import { formatPrice } from '../utils/formatPrice'
 
 const API_URL = '/api/properties'
 
@@ -775,13 +776,13 @@ const fetchProperties = async () => {
 
               {minPrice && (
                 <span className="rounded-full border border-white/10 bg-slate-900 px-3 py-1.5 text-xs text-slate-300">
-                  Min ${Number(minPrice).toLocaleString()}
+                  Min {formatPrice(minPrice, { allowZero: true })}
                 </span>
               )}
 
               {maxPrice && (
                 <span className="rounded-full border border-white/10 bg-slate-900 px-3 py-1.5 text-xs text-slate-300">
-                  Max ${Number(maxPrice).toLocaleString()}
+                  Max {formatPrice(maxPrice, { allowZero: true })}
                 </span>
               )}
 

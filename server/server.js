@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import { fileURLToPath } from 'node:url'
 
 dotenv.config()
 
@@ -57,11 +58,16 @@ app.get('/api/properties', async (req, res) => {
 })
 
 // Contact inquiry endpoint (local dev parity with api/contact.js)
-app.post('/api/contact', async (req, res) => {
-  const { name, email, message, type, date, time, property } = req.body || {}
+export async function contactHandler(req, res) {
+  const { name, email, message, type, date, time, phone, property } = req.body || {}
 
-  if (!name || !email || (!message && type !== 'inspection')) {
-    return res.status(400).json({ error: 'Missing required fields (name, email, message)' })
+  const isInspection = type === 'inspection'
+  const hasName = typeof name === 'string' && name.trim().length > 0
+  const hasEmail = typeof email === 'string' && email.trim().length > 0
+  const hasMessage = typeof message === 'string' && message.trim().length > 0
+
+  if (!hasName || !hasEmail || (!hasMessage && !isInspection)) {
+    return res.status(400).json({ error: 'Missing required fields' })
   }
 
   const resendApiKey = process.env.RESEND_API_KEY
@@ -76,30 +82,35 @@ app.post('/api/contact', async (req, res) => {
     const { Resend } = await import('resend')
     const resend = new Resend(resendApiKey)
 
-    const subject = type === 'inspection'
-      ? `Property Inspection Request from ${name}`
-      : `New contact form inquiry from ${name}`
+    const trimmedName = name.trim()
+    const trimmedEmail = email.trim()
+    const trimmedMessage = typeof message === 'string' ? message.trim() : ''
 
-    const htmlContent = type === 'inspection'
+    const subject = isInspection
+      ? `Property Inspection Request from ${trimmedName}`
+      : `New contact form inquiry from ${trimmedName}`
+
+    const htmlContent = isInspection
       ? `
         <div style="font-family: Inter, system-ui, sans-serif; color: #0f172a;">
           <h1 style="margin-bottom: 16px; color: #0f172a;">New Property Inspection Request</h1>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Name:</strong> ${trimmedName}</p>
+          <p><strong>Email:</strong> ${trimmedEmail}</p>
+          ${phone ? `<p><strong>Phone:</strong> ${String(phone).trim()}</p>` : ''}
           <p><strong>Date:</strong> ${date || 'Not specified'}</p>
           <p><strong>Time:</strong> ${time || 'Not specified'}</p>
           <p><strong>Property:</strong> ${property?.id || 'General'}</p>
           <p><strong>Message:</strong></p>
-          <p style="white-space: pre-wrap;">${message || 'N/A'}</p>
+          <p style="white-space: pre-wrap;">${trimmedMessage || 'N/A'}</p>
         </div>
       `
       : `
         <div style="font-family: Inter, system-ui, sans-serif; color: #0f172a;">
           <h1 style="margin-bottom: 16px; color: #0f172a;">New Await Apartment inquiry</h1>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Name:</strong> ${trimmedName}</p>
+          <p><strong>Email:</strong> ${trimmedEmail}</p>
           <p><strong>Message:</strong></p>
-          <p style="white-space: pre-wrap;">${message}</p>
+          <p style="white-space: pre-wrap;">${trimmedMessage}</p>
         </div>
       `
 
@@ -115,8 +126,16 @@ app.post('/api/contact', async (req, res) => {
     console.error('Failed to send email via Resend:', error)
     return res.status(500).json({ error: error.message || 'Failed to dispatch email' })
   }
-})
+}
 
-app.listen(PORT, () => {
-  console.log(`Await Apartment API running on http://localhost:${PORT}`)
-})
+app.post('/api/contact', contactHandler)
+
+// Only listen if executed directly as the application entry point
+const isMainModule = Boolean(process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1])
+if (isMainModule && process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Await Apartment API running on http://localhost:${PORT}`)
+  })
+}
+
+export { app }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowUpRight, BedDouble, Bath, Maximize2, MapPin } from 'lucide-react'
+import { formatPrice } from '../utils/formatPrice'
 
 const PropertyCard = ({ property, onClick }) => {
   const [imageError, setImageError] = useState(false)
@@ -10,13 +11,7 @@ const PropertyCard = ({ property, onClick }) => {
   const hasImage = Boolean(imageUrl && !imageError)
 
   // Normalize price string/number
-  const formattedPrice = property?.price
-    ? typeof property.price === 'number'
-      ? `$${property.price.toLocaleString()}`
-      : property.price.startsWith('$')
-      ? property.price
-      : `$${property.price}`
-    : 'Price upon request'
+  const formattedPrice = formatPrice(property?.price)
 
   // Normalize title and address
   const title = property?.title || property?.address?.full || 'Await Apartment Property'

@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import InspectionModal from './InspectionalModal'
+import { formatPrice } from '../utils/formatPrice'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   X,
@@ -86,13 +87,7 @@ const PropertyModal = ({ property, onClose }) => {
     'Exclusive Location'
   const status = property?.status || 'Active'
 
-  const formattedPrice = property?.price
-    ? typeof property.price === 'number'
-      ? `$${property.price.toLocaleString()}`
-      : property.price.startsWith('$')
-      ? property.price
-      : `$${property.price}`
-    : 'Price upon request'
+  const formattedPrice = formatPrice(property?.price)
 
   const bedrooms = property?.beds ?? property?.bedrooms ?? '—'
   const bathrooms = property?.baths ?? property?.bathrooms ?? '—'
